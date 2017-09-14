@@ -5,3 +5,6 @@ scalaVersion := "2.12.3"
 
 resolvers += Resolver.sonatypeRepo("snapshots")
 
+libraryDependencies ++= Seq(
+ "joda-time" % "joda-time" % "2.9.9"
+)
