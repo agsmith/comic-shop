@@ -1,22 +1,31 @@
 package io.github.agsmith.comicshop.model
 
 case class Title(value: String)
+object Title {
+  def apply(t: Title) = t
+}
 case class AuthorName(value: String)
-case class ISBN(value: String)
+object AuthorName {
+  def apply(n: AuthorName) = n
+}
+case class Isbn(value: String)
+object Isbn {
+  def apply(i: Isbn) = i
+}
+
 case class Price(value: String)
-
-sealed trait Publisher
+object Price {
+  def apply(p: Price) = p
+}
+case class Publisher(value: String)
 object Publisher {
-  object Marvel extends Publisher
-  object DC extends Publisher
-  object DarkHorse extends Publisher
+  def apply(p: Publisher) = p
 }
 
-sealed trait OrderStatus
+trait OrderStatus
 object OrderStatus {
-  object Opened extends OrderStatus
-  object Shipped extends OrderStatus
-  object Completed extends OrderStatus
+  def apply(o: OrderStatus) = o
 }
+
 
 
