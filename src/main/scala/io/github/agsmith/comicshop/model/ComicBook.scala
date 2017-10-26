@@ -2,6 +2,7 @@ package io.github.agsmith.comicshop.model
 
 import java.util.UUID
 
+// TODO: writer/artist first and last, issue number, Price should be a float, isbn should be int?
 case class ComicBook(
   id: UUID,
   title: Title,
@@ -11,6 +12,3 @@ case class ComicBook(
   available: Boolean,
   price: Price)
 
-object ComicBook {
-  def apply(c: ComicBook) = c
-}
