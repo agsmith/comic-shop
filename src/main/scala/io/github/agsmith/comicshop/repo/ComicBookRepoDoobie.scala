@@ -5,10 +5,7 @@ import java.util.UUID
 
 import model._
 
-import cats.data.NonEmptyList
-import cats._, cats.data._, cats.effect.IO, cats.implicits._
-import cats.syntax.all._
-
+import cats.effect.IO
 import doobie._
 import doobie.implicits._
 import doobie.h2.H2Transactor
@@ -23,13 +20,21 @@ sealed trait ComicBookRepoAlgebra {
 class ComicBookRepoDoobie(val xa: Transactor[IO]) extends ComicBookRepoAlgebra {
 
    /* required implicit Meta types to handle our ADTs */
-  implicit val TitleMeta: Meta[Title] = Meta[Title].nxmap(Title.apply, Title.apply)
-  implicit val AuthorNameMeta: Meta[AuthorName] = Meta[AuthorName].nxmap(AuthorName.apply, AuthorName.apply)
-  implicit val IsbnMeta: Meta[Isbn] = Meta[Isbn].nxmap(Isbn.apply, Isbn.apply)
-  implicit val PriceMeta: Meta[Price] = Meta[Price].nxmap(Price.apply, Price.apply)
-  implicit val PublisherMeta: Meta[Publisher] = Meta[Publisher].nxmap(Publisher.apply, Publisher.apply)
-  implicit val OrderStatusMeta: Meta[OrderStatus] = Meta[OrderStatus].nxmap(OrderStatus.apply, OrderStatus.apply)
-  implicit val ComicBookMeta: Meta[ComicBook] = Meta[ComicBook].nxmap(ComicBook.apply, ComicBook.apply)
+  implicit val TitleMeta: Meta[Title] = Meta[String].nxmap[Title](Title(_),_.value)
+  implicit val AuthorNameMeta: Meta[AuthorName] = Meta[String].nxmap[AuthorName](AuthorName(_), _.value)
+  implicit val IsbnMeta: Meta[Isbn] = Meta[String].nxmap[Isbn](Isbn(_), _.value)
+  implicit val PriceMeta: Meta[Price] = Meta[String].nxmap[Price](Price(_), _.value)
+  implicit val PublisherMeta: Meta[Publisher] = Meta[String].nxmap[Publisher](Publisher(_), _.value)
+  implicit val OrderStatusMeta: Meta[OrderStatus] = Meta[String].nxmap[OrderStatus](OrderStatus(_), _.value)
+  implicit val uuidMeta: Meta[UUID] = Meta[String].nxmap[UUID](UUID.fromString(_), _.toString)
+  implicit val BoolMeta: Meta[Boolean] = Meta[String].xmap[Boolean]( _ match{
+      case "true" => true
+      case _ => false
+    },
+    _ match {
+      case true => "true"
+      case _ => "false"
+    })
 
   override def get(id: UUID): IO[Option[ComicBook]] = {
     val x = sql"SELECT * FROM ComicBook WHERE ID = ${id.toString}"
